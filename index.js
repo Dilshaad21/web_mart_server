@@ -9,6 +9,7 @@ const port = 3000;
 
 mongoose.connect("mongodb://127.0.0.1:27017/web_mart", {
   useNewUrlParser: true,
+  useFindAndModify: false,
 });
 
 mongoose.connection.once("open", () => {
@@ -21,23 +22,35 @@ app.post("/add-product", (req, res) => {
   console.log("Object is ", obj);
   let prod = Product(obj);
   prod
-    .save()
+    .save((err, product) => {
+      console.log(product);
+    })
     .then(() => {
-      console.log("new product is added!");
+      console.log("product saved successfully!");
     })
     .catch((err) => {
       console.log(err);
     });
-  res.send("Hello");
+});
+
+app.put("/edit-product/:product_id", (req, res) => {
+  const id = req.params.product_id;
+  let obj = req.body;
+  console.log("called edit product!");
+  Product.findByIdAndUpdate(id, obj, (err, product) => {
+    if (!err) {
+      res.json({ message: "Product edited successfully!!" });
+    } else res.json({ message: "Failed to edit product!!" });
+  });
 });
 
 app.get("/home", (req, res) => {
   console.log("called /home");
-  Product.find((err, todos) => {
+  Product.find((err, product) => {
     if (err) {
       console.log(err);
     } else {
-      res.json(todos);
+      res.send(product);
     }
   });
 });

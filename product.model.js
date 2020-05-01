@@ -10,6 +10,9 @@ const Product = mongoose.Schema({
   description: {
     type: String,
   },
+  imageUrl: {
+    type: String,
+  },
   rating: {
     type: Number,
   },
