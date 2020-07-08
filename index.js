@@ -104,6 +104,6 @@ app.get("/home", (req, res) => {
   });
 });
 
-app.listen(port, "192.168.0.8", () => {
+app.listen(port, "localhost", () => {
   console.log(`server is running! on port:${port}`);
 });
