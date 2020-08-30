@@ -1,22 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const Product = require("./models/product");
-const Order = require("./models/order");
+const Product = require("../models/product");
+const Order = require("../models/order");
+const verifyToken = require("../verifyToken");
 
-router.post("/add-product", (req, res) => {
+router.use("/", verifyToken);
+
+router.post("/add-product", async (req, res) => {
   const obj = req.body;
   console.log("Object is ", obj);
+  console.log("User is", req.user);
   let prod = Product(obj);
-  prod
-    .save((err, product) => {
+  try {
+    const resul = await prod.save((err, product) => {
       console.log(product);
-    })
-    .then((ord) => {
-      console.log("product saved successfully!");
-    })
-    .catch((err) => {
-      console.log(err);
     });
+    res.send(resul);
+  } catch (err) {
+    res.send(err);
+  }
 });
 
 router.put("/edit-product/:product_id", (req, res) => {
@@ -32,7 +34,6 @@ router.put("/edit-product/:product_id", (req, res) => {
 
 router.post("/order", (req, res) => {
   let order = Order(req.body);
-
   order
     .save((err, ord) => {
       console.log(ord);

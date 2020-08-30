@@ -3,29 +3,33 @@ const router = express.Router();
 
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const User = require("./models/user");
+const User = require("../models/user");
 
 const KEY = "m yincredibl y(!!1!11!)<'SECRET>)Key'!";
 
-router.post("/signup", (req, res) => {
+router.post("/signup", async (req, res) => {
   var password = crypto
     .createHash("sha256")
     .update(req.body.password)
     .digest("hex");
-  User.find({ email: req.body.email }).then(() => {
-    console.log("can create user with email: ", req.body.email);
-    const us = { email: req.body.email, password: password };
-    const user = User(us);
-    user
-      .save((err, u) => {
-        console.log("Successfully inserted user!!");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  });
-  res.status(201);
-  res.send("Success");
+  try {
+    const user = await User.find({ email: req.body.email });
+    console.log(user);
+    if (user.length) {
+      res.json({ user: user, message: "User cannot be created!" });
+    } else {
+      const usr = User({ email: req.body.email, password: password });
+      try {
+        const userRes = await usr.save();
+        res.json({ user: userRes, message: "User created!" });
+      } catch (err) {
+        res.send(err);
+      }
+    }
+  } catch (err) {
+    console.log("error occured!", err);
+    res.send(err);
+  }
 });
 
 router.post("/login", (req, res) => {

@@ -4,14 +4,15 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
 const Product = require("./models/product");
-const userRoutes = require("./user");
-const productRoutes = require("./product");
+const userRoutes = require("./routes/user");
+const productRoutes = require("./routes/product");
 
 const port = 3000;
 
 mongoose.connect("mongodb://127.0.0.1:27017/web_mart", {
   useNewUrlParser: true,
   useFindAndModify: false,
+  useUnifiedTopology: true,
 });
 
 mongoose.connection.once("open", () => {
